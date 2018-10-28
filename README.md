@@ -15,17 +15,27 @@ There are no other release dependencies. The unit testing framework is [Catch2](
 
 # Build
 
+## Conan
 To install via Conan run:
 ```
 make
 ```
 
-To otherwise build an artifact use:
+## Release
+To otherwise build a release artifact use:
 ```
 make release
 ```
 The artifact will be in ./build/release/libUtil.a
 
+## Debug
+To otherwise build a debug artifact use:
+```
+make debug
+```
+The artifact will be in ./build/debug/libUtil.a
+
+## Documentation
 To generate documentation use:
 ```
 make doc
