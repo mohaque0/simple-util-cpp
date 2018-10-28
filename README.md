@@ -20,6 +20,7 @@ To install via Conan run:
 ```
 make
 ```
+The artifact will be installed to Util/0.1@util/stable.
 
 ## Release
 To otherwise build a release artifact use:
