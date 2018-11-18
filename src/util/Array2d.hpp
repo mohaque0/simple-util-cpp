@@ -2,7 +2,6 @@
 #define ARRAY2D_HPP
 
 #include "util/Array3d.hpp"
-#include "util/exception/IllegalStateException.hpp"
 
 #include <cstddef>
 #include <cstring>
@@ -11,6 +10,10 @@
 #include <utility>
 
 namespace Util {
+
+enum class Array2dError {
+	OutOfBounds
+};
 
 template<typename T, class Allocator = std::allocator<T>>
 class Array2d
@@ -52,8 +55,21 @@ public:
 	}
 
 	template <class... Args>
-	void emplace(const size_t i0, const size_t i1, Args&&... args) {
-		container.emplace(i0, i1, 0, std::forward<Args>(args)...);
+	Result<T*, Array2dError> emplace(const size_t i0, const size_t i1, Args&&... args) {
+		auto result = container.emplace(i0, i1, 0, std::forward<Args>(args)...);
+
+		if (result) {
+			return result_ok<T*, Array2dError>(result.ok());
+		} else {
+			switch (result.error()) {
+			case Array3dError::OutOfBounds: {
+				return result_err<T*,Array2dError>(Array2dError::OutOfBounds);
+				break;
+			}
+			}
+
+			throw std::runtime_error("Unreachable.");
+		}
 	}
 
 	template <class... Args>

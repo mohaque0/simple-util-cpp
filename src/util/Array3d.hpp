@@ -1,7 +1,8 @@
 #ifndef Array3d_HPP
 #define Array3d_HPP
 
-#include "util/exception/IllegalStateException.hpp"
+#include "util/Result.hpp"
+#include "util/Unit.hpp"
 
 #include <cstddef>
 #include <cstring>
@@ -9,6 +10,10 @@
 #include <utility>
 
 namespace Util {
+
+enum class Array3dError {
+	OutOfBounds
+};
 
 template<typename T, class Allocator = std::allocator<T>>
 class Array3d
@@ -161,22 +166,24 @@ public:
     }
 
 	template <class... Args>
-	void emplace(const size_t i0, const size_t i1, const size_t i2, Args&&... args) {
+	Result<T*,Array3dError> emplace(const size_t i0, const size_t i1, const size_t i2, Args&&... args) {
 		if (data_ == NULL) {
-			throw Exception::IllegalStateException("Attempting to access data in an empty array.");
+			return result_err<T*,Array3dError>(Array3dError::OutOfBounds);
 		}
 
 		T* ptr = &at(i0, i1, i2);
 		allocator.destroy(ptr);
 		allocator.construct(ptr, std::forward<Args>(args)...);
+		return result_ok<T*,Array3dError>(ptr);
 	}
 
-	void set(T&& value, const size_t i0, const size_t i1, const size_t i2) {
+	Result<T*,Array3dError> set(T&& value, const size_t i0, const size_t i1, const size_t i2) {
 		if (data_ == NULL) {
-			throw Exception::IllegalStateException("Attempting to access data in an empty array.");
+			return result_err<T*,Array3dError>(Array3dError::OutOfBounds);
 		}
 
 		at(i0, i1, i2) = std::move(value);
+		return result_ok<T*,Array3dError>(&at(i0, i1, i2));
 	}
 
 	void set(const T& value, const size_t i0, const size_t i1, const size_t i2) {
