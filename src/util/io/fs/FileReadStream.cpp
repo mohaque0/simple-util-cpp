@@ -11,48 +11,38 @@ namespace Util {
 namespace IO {
 namespace FS {
 
-FileReadStream::FileReadStream(const File& file) :
-	handle(NULL)
-{
-	const String pathString = file.getPath().getString();
-	handle = fopen(pathString.c_str().get(), "r");
-	if (handle == NULL) {
-		printf("%s\n", pathString.c_str().get());
-		throw Exception::IOException(("Error reading file: " + pathString).c_str().get());
-	}
-}
+FileReadStream::FileReadStream(FILE* file) :
+	handle(file)
+{}
 
 FileReadStream::~FileReadStream()
 {
 	close();
 }
 
-void FileReadStream::close()
+Result<Unit, ReadStream::Error> FileReadStream::close()
 {
 	if (handle != NULL) {
 		if (fclose(handle) != 0) {
-			// Error
-			char buffer[ERROR_BUFFER_SIZE];
-			if (strerror_p(errno, buffer, ERROR_BUFFER_SIZE) != 0) {
-				throw Exception::IOException("Unknown IO Error.");
-			}
-			throw Exception::IOException(buffer);
+			return result_err<Unit>(ReadStream::Error::Unknown);
 		}
 		handle = NULL;
 	}
+
+	return result_ok<Unit, ReadStream::Error>(Unit());
 }
 
-ReadStream::Result FileReadStream::read(uint8_t& buffer)
+Result<Unit, ReadStream::Error> FileReadStream::read(uint8_t& buffer)
 {
-	int nread = fread(&buffer, sizeof(uint8_t), 1, handle);
+	size_t nread = fread(&buffer, sizeof(uint8_t), 1, handle);
 	if (nread < 1) {
 		if (feof(handle) > 0) {
-			return Result::EndOfStream;
+			return result_err<Unit>(ReadStream::Error::EndOfStream);
 		} else {
-			return Result::Error;
+			return result_err<Unit>(ReadStream::Error::Unknown);;
 		}
 	}
-	return Result::Ok;
+	return result_ok<Unit, ReadStream::Error>(Unit());
 }
 
 }

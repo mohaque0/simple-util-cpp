@@ -35,4 +35,15 @@ TEST_CASE("Result") {
 		REQUIRE(result.isError());
 		REQUIRE(result.error() == 3);
 	}
+
+	SECTION("Test Move Assignment") {
+		Data data(1,2,3);
+		Result<Data, int> result(result_err<Data, int>(3));
+		result = result_ok<Data, int>(std::move(data));
+
+		REQUIRE(bool(result) == true);
+		REQUIRE(result.isOk());
+		REQUIRE(!result.isError());
+		REQUIRE(result.ok() == Data(1,2,3));
+	}
 }

@@ -2,8 +2,6 @@
 
 #include "util/io/ResizingBuffer.hpp"
 
-using Util::Exception::IOException;
-
 namespace Util {
 namespace IO {
 
@@ -13,24 +11,26 @@ ReadStream::ReadStream()
 ReadStream::~ReadStream()
 {}
 
-void ReadStream::close()
-{}
-
-ReadStream::Result ReadStream::readFull(ResizingBuffer& buffer)
+Result<Unit, ReadStream::Error> ReadStream::close()
 {
-	Result result = Result::Ok;
+	return result_ok<Unit, ReadStream::Error>(Unit());
+}
+
+Result<Unit, ReadStream::Error> ReadStream::readFull(ResizingBuffer& buffer)
+{
+	auto result = result_ok<Unit, ReadStream::Error>(Unit());
 	uint8_t byte;
-	while ((result = read(byte)) == Result::Ok) {
+	while ((result = read(byte))) {
 		buffer.put(&byte, 1);
 	}
 	return result;
 }
 
-ReadStream::Result ReadStream::readLine(ResizingBuffer& buffer)
+Result<Unit, ReadStream::Error> ReadStream::readLine(ResizingBuffer& buffer)
 {
-	Result result = Result::Ok;
+	auto result = result_ok<Unit, ReadStream::Error>(Unit());
 	uint8_t byte;
-	while ((result = read(byte)) == Result::Ok) {
+	while ((result = read(byte))) {
 		if (byte == '\n') {
 			break;
 		}

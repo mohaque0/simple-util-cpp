@@ -15,13 +15,15 @@ class FileReadStream : public Util::IO::ReadStream
 private:
 	FILE* handle;
 
+	FileReadStream(FILE* file);
 public:
-	FileReadStream(const File& file);
 	virtual ~FileReadStream();
 
 	// Stream interface
-	virtual void close();
-	virtual Result read(uint8_t&);
+	virtual Result<Unit, ReadStream::Error> close();
+	virtual Result<Unit, ReadStream::Error> read(uint8_t&);
+
+	friend class File;
 };
 
 }
