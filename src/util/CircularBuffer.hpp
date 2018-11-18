@@ -1,7 +1,8 @@
 #ifndef CIRCULARBUFFER_HPP
 #define CIRCULARBUFFER_HPP
 
-#include "util/exception/IllegalStateException.hpp"
+#include "util/Result.hpp"
+#include "util/Unit.hpp"
 
 #include <cstddef>
 #include <memory>
@@ -10,10 +11,17 @@
 
 namespace Util {
 
+enum class CircularBufferError {
+	NoMoreElements,
+	OutOfSpace
+};
+
 template <class T, class Allocator = std::allocator<T>>
 class CircularBuffer
 {
 private:
+	typedef CircularBufferError Error;
+
 	Allocator allocator;
 	T* buffer;
 	size_t start;    // This is inclusive.
@@ -28,10 +36,10 @@ private:
 	/**
 	 * Move the end index up by one.
 	 */
-	void pushEndIndex() {
+	Result<Unit,Error> pushEndIndex() {
 		// Out of space.
 		if (hasValues && end == start) {
-			throw Exception::IllegalStateException("Out of space.");
+			return result_err<Unit,Error>(Error::OutOfSpace);
 		}
 
 		end++;
@@ -39,15 +47,17 @@ private:
 			end = 0;
 		}
 		hasValues = true;
+
+		return result_ok<Unit,Error>(Unit());
 	}
 
 	/**
 	 * Move the start index up by one.
 	 */
-	void pushStartIndex() {
+	Result<Unit,Error> pushStartIndex() {
 		// No more elements.
 		if (!hasValues && start == end) {
-			throw Exception::IllegalStateException("No more elements.");
+			return result_err<Unit,Error>(Error::NoMoreElements);
 		}
 
 		start++;
@@ -57,6 +67,8 @@ private:
 		if (start == end) {
 			hasValues = false;
 		}
+
+		return result_ok<Unit,Error>(Unit());
 	}
 
 public:
@@ -86,10 +98,12 @@ public:
 		return capacity_;
 	}
 
-	void pop_front() {
+	Result<Unit,Error> pop_front() {
 		T * const ptr = buffer + start;
-		allocator.destroy(ptr);
-		pushStartIndex();
+		if (hasValues) {
+			allocator.destroy(ptr);
+		}
+		return pushStartIndex();
 	}
 
     T& peek_front() {
@@ -101,11 +115,12 @@ public:
     }
 
 	template <class... Args>
-	T& emplace_back(Args&&... args) {
+	Result<Unit,Error> emplace_back(Args&&... args) {
 		T * const ptr = buffer + end;
-		allocator.construct(ptr, std::forward<Args>(args)...);
-		pushEndIndex();
-		return *ptr;
+		if (size() < capacity()) {
+			allocator.construct(ptr, std::forward<Args>(args)...);
+		}
+		return pushEndIndex();
 	}
 
 };
