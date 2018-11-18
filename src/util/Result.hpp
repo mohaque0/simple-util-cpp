@@ -81,16 +81,37 @@ public:
 	}
 
 	template <typename A, typename B>
+	friend Result<A, B> result_ok(const A& value);
+
+	template <typename A, typename B>
 	friend Result<A, B> result_ok(A&& value);
+
+	template <typename A, typename B>
+	friend Result<A, B> result_err(const B& value);
 
 	template <typename A, typename B>
 	friend Result<A, B> result_err(B&& value);
 };
 
 template <typename T, typename E>
+static Result<T, E> result_ok(const T& value) {
+	Result<T, E> result;
+	new (&result.data) T(value);
+	return result;
+}
+
+template <typename T, typename E>
 static Result<T, E> result_ok(T&& value) {
 	Result<T, E> result;
 	new (&result.data) T(std::move(value));
+	return result;
+}
+
+template <typename T, typename E>
+static Result<T, E> result_err(const E& value) {
+	Result<T, E> result;
+	new (&result.data) E(value);
+	result.errorFlag = true;
 	return result;
 }
 
