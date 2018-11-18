@@ -10,10 +10,10 @@ namespace IO {
 ReadStream::ReadStream()
 {}
 
-ReadStream::~ReadStream() throw(IOException)
+ReadStream::~ReadStream()
 {}
 
-void ReadStream::close() throw(IOException)
+void ReadStream::close()
 {}
 
 ReadStream::Result ReadStream::readFull(ResizingBuffer& buffer)

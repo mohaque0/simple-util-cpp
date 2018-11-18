@@ -16,11 +16,11 @@ private:
 	FILE* handle;
 
 public:
-	FileReadStream(const File& file) throw(Exception::IOException);
+	FileReadStream(const File& file);
 	virtual ~FileReadStream();
 
 	// Stream interface
-	virtual void close() throw(Exception::IOException);
+	virtual void close();
 	virtual Result read(uint8_t&);
 };
 

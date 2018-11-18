@@ -11,7 +11,7 @@ namespace Util {
 namespace IO {
 namespace FS {
 
-FileReadStream::FileReadStream(const File& file) throw (Exception::IOException) :
+FileReadStream::FileReadStream(const File& file) :
 	handle(NULL)
 {
 	const String pathString = file.getPath().getString();
@@ -27,7 +27,7 @@ FileReadStream::~FileReadStream()
 	close();
 }
 
-void FileReadStream::close() throw(Exception::IOException)
+void FileReadStream::close()
 {
 	if (handle != NULL) {
 		if (fclose(handle) != 0) {

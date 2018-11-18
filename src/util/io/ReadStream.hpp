@@ -21,8 +21,8 @@ public:
 	};
 
 	ReadStream();
-	virtual ~ReadStream() throw(Util::Exception::IOException);
-	virtual void close() throw(Util::Exception::IOException);
+	virtual ~ReadStream();
+	virtual void close();
 
 	/**
 	 * @brief read Reads a single byte into the passed in argument.
