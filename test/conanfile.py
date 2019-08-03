@@ -8,9 +8,9 @@ class TestUtilConan(ConanFile):
     requires = "catch2/2.2.2@bincrafters/stable"
 
     def generate_testlist(self):
-        print "Working Directory: " + os.getcwd()
-        print "Source Folder: " + self.source_folder
-        print "Generating testlist.txt in " + os.getcwd() + " from " + self.source_folder
+        print("Working Directory: " + os.getcwd())
+        print("Source Folder: " + self.source_folder)
+        print("Generating testlist.txt in " + os.getcwd() + " from " + self.source_folder)
         f = open("testlist.txt", "w")
 
         for (path, dirs, files) in os.walk(self.source_folder):

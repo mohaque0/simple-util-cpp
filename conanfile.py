@@ -15,7 +15,7 @@ class UtilConan(ConanFile):
     exports_sources=["src/*", "CMakeLists.txt", "cmake/*"]
 
     def generate_filelist(self):
-        print "Generating filelist.txt"
+        print("Generating filelist.txt")
         f = open("filelist.txt", "w")
 
         for (path, dirs, files) in os.walk("src"):
