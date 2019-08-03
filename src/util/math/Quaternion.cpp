@@ -59,7 +59,7 @@ Quat Quat::inverse(const Quat &q)
 
 Quat Quat::versor(const Quat &q)
 {
-	return q / q.norm();
+	return Quat(q.w(), Vec::normalize(Vec(q.x_, q.y_, q.z_)));
 }
 
 const Quat operator-(const Quat &q)
